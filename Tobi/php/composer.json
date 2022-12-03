@@ -1,0 +1,19 @@
+{
+    "name": "tobiashettler/php",
+    "require": {
+        "php": "8.1",
+        "illuminate/collections": "^9.42",
+        "symfony/console": "^6.2"
+    },
+    "autoload": {
+        "psr-4": {
+            "Src\\": "src/"
+        }
+    },
+    "authors": [
+        {
+            "name": "Tobias Hettler",
+            "email": "tobias.hettler@bitbench.dev"
+        }
+    ]
+}
