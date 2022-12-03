@@ -29,29 +29,20 @@ class Day3 extends Command
     public function execute(InputInterface $input, OutputInterface $output): int
     {
         $task = $input->getArgument('task');
-//        $data = getInput(3);
-        $data = "vJrwpWtwJgWrhcsFMMfFFhFp
-jqHRNqRjqzjGDLGLrsFMfFZSrLrFZsSL
-PmmdzqPrVvPwwTWBwg
-wMqvLMZHhHMvwLHjbvcjnnSBnvTQFn
-ttgJtRGJQctTZtZT
-CrZsJsPPZsGzwwsLwLmpwMDw";
+        $data = getInput(3);
 
         $result = collect(explode(PHP_EOL, $data))
-            // Remove null values
             ->filter()
-            // Split the rucksack into its compartments if Task 1
-            ->when($task === '1',
-                fn(Collection $collection) => $collection
-                    ->map(fn(string $rucksack) => str_split($rucksack, strlen($rucksack) / 2))
-            )
-            // Split the rucksack into group of 3
-            ->when($task === '2',
-                fn(Collection $collection) => $collection->chunk(3)
+            ->pipe(fn(Collection $collection) => match ($task) {
+                '1' => $collection->map(fn(string $rucksack) => collect(str_split($rucksack, strlen($rucksack) / 2))),
+                '2' => $collection->chunk(3)
                     ->map
-                    ->toArray()
-            )
-            ->map(fn(array $compartments) => $this->findeDuplicate($compartments))
+                    ->values()
+            })
+            ->map(fn(Collection $compartments) => match ($task) {
+                '1' => $this->findDuplicate($compartments[0], $compartments[1]),
+                '2' => $this->findDuplicate($compartments[0], ...$compartments->slice(1)->toArray())
+            })
             ->map(fn(string $duplicate) => $this->assignScore($duplicate))
             ->sum();
 
@@ -59,15 +50,19 @@ CrZsJsPPZsGzwwsLwLmpwMDw";
         return Command::SUCCESS;
     }
 
-    protected function findeDuplicate(array $compartments)
+    protected function findDuplicate(string $base, string ...$compares): string
     {
-        $compartment1 = collect(str_split($compartments[0]));
-        $compartment2 = str_split($compartments[1]);
+        $base = collect(str_split($base));
 
-        return $compartment1
-            ->intersect($compartment2)
-            ->unique()
-            ->first();
+        foreach ($compares as $compare) {
+            $compartment2 = str_split($compare);
+
+            $base = $base
+                ->intersect($compartment2)
+                ->unique();
+        }
+
+        return $base->first();
     }
 
     protected function assignScore(string $duplicate)
