@@ -65,7 +65,7 @@ class Day3 extends Command
         return $base->first();
     }
 
-    protected function assignScore(string $duplicate)
+    protected function assignScore(string $duplicate): int
     {
         if (ctype_upper($duplicate)) {
             return 26 + $this->alphabet[strtolower($duplicate)] + 1;
