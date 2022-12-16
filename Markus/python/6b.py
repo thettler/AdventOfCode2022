@@ -6,9 +6,7 @@ sub=[]
 for line in fileinput.input():
     line=line.strip()
 
-    sig=[]
-    for c in line:
-        sig.append(c)
+    sig=list(line)
     
     while y<len(sig)+1:
         sub=sig[x:y]
